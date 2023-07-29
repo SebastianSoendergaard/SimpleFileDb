@@ -1,6 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using AutoFixture;
-using SimpleFileDbV1.db;
+using SimpleFileDatabase;
 using System.Diagnostics;
 
 var fixture = new Fixture();
