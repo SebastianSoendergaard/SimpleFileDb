@@ -13,11 +13,29 @@ namespace SimpleFileDbV1.db
             Directory.CreateDirectory(_configuration.DirectoryPath);
         }
 
-        public void Save<Tdata>(Tdata data) where Tdata : class
+        public void Create<Tdata>(Tdata data) where Tdata : class
         {
             var id = GetIdFromData(data);
             var path = CreateFilePath<Tdata>(id);
+            if (File.Exists(path))
+            {
+                throw new AlreadyExistException($"Id for {typeof(Tdata).FullName} already exist");
+            }
+
             Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+            var json = JsonSerializer.Serialize(data);
+            File.WriteAllText(path, json);
+        }
+
+        public void Update<Tdata>(Tdata data) where Tdata : class
+        {
+            var id = GetIdFromData(data);
+            var path = CreateFilePath<Tdata>(id);
+            if (!File.Exists(path))
+            {
+                throw new NotFoundException($"Id for {typeof(Tdata).FullName} not found");
+            }
 
             var json = JsonSerializer.Serialize(data);
             File.WriteAllText(path, json);

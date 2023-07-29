@@ -14,14 +14,14 @@ ISimpleFileDb db = new SimpleFileDb(config);
 var testObjects = fixture.CreateMany<TestObjectA>(100);
 
 
-Console.WriteLine("Saving items to db");
+Console.WriteLine("Creating items in db");
 stopwatch.Start();
 foreach (var item in testObjects)
 {
-    db.Save(item);
+    db.Create(item);
 }
 stopwatch.Stop();
-Console.WriteLine($"Items saved to db in {stopwatch.Elapsed}");
+Console.WriteLine($"Items created in db in {stopwatch.Elapsed}");
 
 
 Console.WriteLine("Fetching items from db one by one");
@@ -32,6 +32,17 @@ foreach (var item in testObjects)
 }
 stopwatch.Stop();
 Console.WriteLine($"Items fetched from db in {stopwatch.Elapsed}");
+
+
+Console.WriteLine("Updating items in db one by one");
+stopwatch.Restart();
+foreach (var item in testObjects)
+{
+    var newItem = item with { Text = fixture.Create<string>() };
+    db.Update(newItem);
+}
+stopwatch.Stop();
+Console.WriteLine($"Items updated in db in {stopwatch.Elapsed}");
 
 
 Console.WriteLine("Fetching all items from db");
