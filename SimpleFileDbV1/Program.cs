@@ -6,6 +6,19 @@ using System.Diagnostics;
 var fixture = new Fixture();
 var stopwatch = new Stopwatch();
 
+/*
+ * Version 1
+ * Implement full CRUD operations, by simply creating, reading, updating and deleting files with the objects serialized as json.
+ * 
+ * Not included:
+ * - handling of file write failure
+ * - thread safety
+ * - indexing / searching options
+ * - caching to improve performance
+ * - other file formats
+ * 
+ */
+
 var config = new SimpleFileDbConfiguration(@"C:\Temp\SimpleFileDb\v1\");
 config.RegisterDataType<TestObjectA>(i => i.Id);
 
