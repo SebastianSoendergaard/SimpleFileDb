@@ -13,7 +13,7 @@ public class SimpleFileDb : ISimpleFileDb
         Directory.CreateDirectory(_configuration.DirectoryPath);
     }
 
-    public void Create<Tdata>(Tdata data) where Tdata : class
+    public async Task CreateAsync<Tdata>(Tdata data) where Tdata : class
     {
         var id = GetIdFromData(data);
         var path = CreateFilePath<Tdata>(id);
@@ -22,13 +22,13 @@ public class SimpleFileDb : ISimpleFileDb
             throw new AlreadyExistException($"Id for {typeof(Tdata).FullName} already exist");
         }
 
-        Directory.CreateDirectory(Path.GetDirectoryName(path));
+        Directory.CreateDirectory(Path.GetDirectoryName(path) ?? throw new ArgumentNullException("Path cannot be null"));
 
         var json = JsonSerializer.Serialize(data);
-        File.WriteAllText(path, json);
+        await File.WriteAllTextAsync(path, json);
     }
 
-    public void Update<Tdata>(Tdata data) where Tdata : class
+    public async Task UpdateAsync<Tdata>(Tdata data) where Tdata : class
     {
         var id = GetIdFromData(data);
         var path = CreateFilePath<Tdata>(id);
@@ -38,10 +38,10 @@ public class SimpleFileDb : ISimpleFileDb
         }
 
         var json = JsonSerializer.Serialize(data);
-        File.WriteAllText(path, json);
+        await File.WriteAllTextAsync(path, json);
     }
 
-    public Tdata? GetById<Tdata>(object id) where Tdata : class
+    public async Task<Tdata?> GetByIdAsync<Tdata>(object id) where Tdata : class
     {
         var path = CreateFilePath<Tdata>(id);
         if (!File.Exists(path))
@@ -49,18 +49,18 @@ public class SimpleFileDb : ISimpleFileDb
             return null;
         }
 
-        var json = File.ReadAllText(path);
+        var json = await File.ReadAllTextAsync(path);
         var data = JsonSerializer.Deserialize<Tdata>(json);
         return data;
     }
 
-    public IEnumerable<Tdata> GetAll<Tdata>() where Tdata : class
+    public async Task<IEnumerable<Tdata>> GetAllAsync<Tdata>() where Tdata : class
     {
         var path = CreateDirectoryPath<Tdata>();
         var files = Directory.EnumerateFiles(path);
         foreach (var file in files)
         {
-            var json = File.ReadAllText(file);
+            var json = await File.ReadAllTextAsync(file);
             var data = JsonSerializer.Deserialize<Tdata>(json);
             if (data != null)
             {
@@ -69,10 +69,11 @@ public class SimpleFileDb : ISimpleFileDb
         }
     }
 
-    public void DeleteById<Tdata>(object id) where Tdata : class
+    public Task DeleteByIdAsync<Tdata>(object id) where Tdata : class
     {
         var path = CreateFilePath<Tdata>(id);
         File.Delete(path);
+        return Task.CompletedTask;
     }
 
     private object GetIdFromData<Tdata>(Tdata data) where Tdata : class

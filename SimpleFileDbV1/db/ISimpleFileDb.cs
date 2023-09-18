@@ -2,9 +2,9 @@
 
 public interface ISimpleFileDb
 {
-    public void Create<Tdata>(Tdata data) where Tdata : class;
-    public void Update<Tdata>(Tdata data) where Tdata : class;
-    public Tdata? GetById<Tdata>(object id) where Tdata : class;
-    public IEnumerable<Tdata> GetAll<Tdata>() where Tdata : class;
-    public void DeleteById<Tdata>(object id) where Tdata : class;
+    public Task CreateAsync<Tdata>(Tdata data) where Tdata : class;
+    public Task UpdateAsync<Tdata>(Tdata data) where Tdata : class;
+    public Task<Tdata?> GetByIdAsync<Tdata>(object id) where Tdata : class;
+    public Task<IEnumerable<Tdata>> GetAll<Tdata>() where Tdata : class;
+    public Task DeleteByIdAsync<Tdata>(object id) where Tdata : class;
 }
