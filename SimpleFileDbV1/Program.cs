@@ -24,14 +24,14 @@ config.RegisterDataType<TestObjectA>(i => i.Id);
 
 ISimpleFileDb db = new SimpleFileDb(config);
 
-var testObjects = fixture.CreateMany<TestObjectA>(100);
+var testObjects = fixture.CreateMany<TestObjectA>(10000);
 
 
 Console.WriteLine("Creating items in db");
 stopwatch.Start();
 foreach (var item in testObjects)
 {
-    db.Create(item);
+    await db.CreateAsync(item);
 }
 stopwatch.Stop();
 Console.WriteLine($"Items created in db in {stopwatch.Elapsed}");
@@ -41,7 +41,7 @@ Console.WriteLine("Fetching items from db one by one");
 stopwatch.Restart();
 foreach (var item in testObjects)
 {
-    var storedItem = db.GetById<TestObjectA>(item.Id);
+    var storedItem = await db.GetByIdAsync<TestObjectA>(item.Id);
 }
 stopwatch.Stop();
 Console.WriteLine($"Items fetched from db in {stopwatch.Elapsed}");
@@ -52,7 +52,7 @@ stopwatch.Restart();
 foreach (var item in testObjects)
 {
     var newItem = item with { Text = fixture.Create<string>() };
-    db.Update(newItem);
+    await db.UpdateAsync(newItem);
 }
 stopwatch.Stop();
 Console.WriteLine($"Items updated in db in {stopwatch.Elapsed}");
@@ -60,7 +60,11 @@ Console.WriteLine($"Items updated in db in {stopwatch.Elapsed}");
 
 Console.WriteLine("Fetching all items from db");
 stopwatch.Restart();
-var allItems = db.GetAll<TestObjectA>().ToList();
+List<TestObjectA> allItems = new();
+await foreach (var item in db.GetAllAsync<TestObjectA>())
+{
+    allItems.Add(item);
+}
 stopwatch.Stop();
 Console.WriteLine($"All items fetched from db in {stopwatch.Elapsed}");
 
@@ -69,7 +73,7 @@ Console.WriteLine("Deleting items from db one by one");
 stopwatch.Restart();
 foreach (var item in testObjects)
 {
-    db.DeleteById<TestObjectA>(item.Id);
+    await db.DeleteByIdAsync<TestObjectA>(item.Id);
 }
 stopwatch.Stop();
 Console.WriteLine($"Items deleted from db in {stopwatch.Elapsed}");
