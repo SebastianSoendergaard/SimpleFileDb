@@ -54,7 +54,7 @@ public class SimpleFileDb : ISimpleFileDb
         return data;
     }
 
-    public async Task<IEnumerable<Tdata>> GetAllAsync<Tdata>() where Tdata : class
+    public async IAsyncEnumerable<Tdata> GetAllAsync<Tdata>() where Tdata : class
     {
         var path = CreateDirectoryPath<Tdata>();
         var files = Directory.EnumerateFiles(path);
